@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="card p-3 mb-3">
+    <form method="POST" class="d-flex">
+        <input type="text" name="username" class="form-control me-2" placeholder="사용자 이름 검색" required>
+        <button type="submit" class="btn btn-outline-primary">친구 요청</button>
+    </form>
+</div>
+
+<div class="card p-3 mb-3">
+    <h5 class="mb-3">받은 요청</h5>
+    {% for fr in received_requests %}
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="d-flex align-items-center">
+            <img src="https://via.placeholder.com/40" class="profile-img">
+            <span>{{ fr.requester_id }}</span>
+        </div>
+        <div>
+            <a href="{{ url_for('friend.accept_friend', friend_id=fr.id) }}" class="btn btn-outline-success btn-sm">수락</a>
+            <a href="{{ url_for('friend.reject_friend', friend_id=fr.id) }}" class="btn btn-outline-danger btn-sm">거절</a>
+        </div>
+    </div>
+    {% else %}
+    <p class="text-muted">받은 요청 없음</p>
+    {% endfor %}
+</div>
+
+<div class="card p-3 mb-3">
+    <h5 class="mb-3">보낸 요청</h5>
+    {% for fr in sent_requests %}
+    <div class="d-flex align-items-center mb-2">
+        <img src="https://via.placeholder.com/40" class="profile-img">
+        <span>{{ fr.receiver_id }} (대기 중)</span>
+    </div>
+    {% else %}
+    <p class="text-muted">보낸 요청 없음</p>
+    {% endfor %}
+</div>
+
+<div class="card p-3">
+    <h5 class="mb-3">친구 목록</h5>
+    {% for fr in friends %}
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="d-flex align-items-center">
+            <img src="https://via.placeholder.com/40" class="profile-img">
+            {% if fr.requester_id == current_user.id %}
+                <span>{{ fr.receiver_id }}</span>
+            {% else %}
+                <span>{{ fr.requester_id }}</span>
+            {% endif %}
+        </div>
+        <a href="{{ url_for('friend.delete_friend', friend_id=fr.id) }}" class="btn btn-outline-danger btn-sm">삭제</a>
+    </div>
+    {% else %}
+    <p class="text-muted">친구 없음</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,25 +1,67 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2 class="mb-4">나의 투두 리스트</h2>
-<form method="POST" action="{{ url_for('add_todo') }}" class="d-flex mb-3">
-    <input type="text" name="title" class="form-control me-2" placeholder="할 일을 입력하세요" required>
-    <button type="submit" class="btn btn-primary">추가</button>
-</form>
-<ul class="list-group">
+<!-- 투두 추가 카드 -->
+<div class="card p-3 mb-3">
+    <form method="POST" action="{{ url_for('todo.add_todo') }}">
+        <div class="mb-2">
+            <input type="text" name="title" class="form-control" placeholder="할 일을 입력하세요..." required>
+        </div>
+
+        {% if friends %}
+        <div class="mb-2">
+            <label class="form-label fw-bold">공유할 친구 선택</label>
+            <div class="d-flex flex-wrap">
+                {% for fr in friends %}
+                    {% if fr.requester_id == current_user.id %}
+                        <div class="form-check me-3">
+                            <input class="form-check-input" type="checkbox" name="share_with" value="{{ fr.receiver_id }}">
+                            <label class="form-check-label">{{ fr.receiver_id }}</label>
+                        </div>
+                    {% else %}
+                        <div class="form-check me-3">
+                            <input class="form-check-input" type="checkbox" name="share_with" value="{{ fr.requester_id }}">
+                            <label class="form-check-label">{{ fr.requester_id }}</label>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-outline-primary w-100">추가</button>
+    </form>
+</div>
+
+<!-- 내 투두 목록 -->
+<div class="card p-3 mb-3">
+    <h5 class="mb-3">내 할 일</h5>
     {% for todo in todos %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>
-                {% if todo.is_completed %}
-                    <s class="text-muted">{{ todo.title }}</s>
-                {% else %}
-                    {{ todo.title }}
-                {% endif %}
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span {% if todo.is_completed %}style="text-decoration: line-through;"{% endif %}>
+                {{ todo.title }}
             </span>
             <div>
-                <a href="{{ url_for('complete_todo', todo_id=todo.id) }}" class="btn btn-sm btn-success">완료/취소</a>
-                <a href="{{ url_for('delete_todo', todo_id=todo.id) }}" class="btn btn-sm btn-danger">삭제</a>
+                <a href="{{ url_for('todo.complete_todo', todo_id=todo.id) }}" class="btn btn-outline-success btn-sm me-1">
+                    {% if todo.is_completed %}취소{% else %}완료{% endif %}
+                </a>
+                <a href="{{ url_for('todo.delete_todo', todo_id=todo.id) }}" class="btn btn-outline-danger btn-sm">삭제</a>
             </div>
-        </li>
+        </div>
+    {% else %}
+        <p class="text-muted">등록된 할 일이 없습니다.</p>
     {% endfor %}
-</ul>
+</div>
+
+<!-- 공유 받은 투두 -->
+<div class="card p-3">
+    <h5 class="mb-3">공유 받은 할 일</h5>
+    {% for todo in shared_todos %}
+        <div class="mb-2">
+            <span>{{ todo.title }}</span>
+            <small class="text-muted">(공유받음)</small>
+        </div>
+    {% else %}
+        <p class="text-muted">공유 받은 할 일이 없습니다.</p>
+    {% endfor %}
+</div>
 {% endblock %}
