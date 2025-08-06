@@ -2,10 +2,31 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>CollabTodo</title>
+    <title>나의 투두 리스트</title>
 </head>
 <body>
-    <h1>🚀 CollabTodo 시작!</h1>
-    <p>여기에 메인 페이지가 표시됩니다.</p>
+<h2>{{ current_user.username }}님의 투두 리스트</h2>
+<form method="POST" action="{{ url_for('add_todo') }}">
+    <input type="text" name="title" placeholder="할 일을 입력하세요" required>
+    <button type="submit">추가</button>
+</form>
+<ul>
+    {% for todo in todos %}
+    <li>
+        {% if todo.is_completed %}
+            <s>{{ todo.title }}</s>
+        {% else %}
+            {{ todo.title }}
+        {% endif %}
+        <a href="{{ url_for('complete_todo', todo_id=todo.id) }}">
+            [완료/취소]
+        </a>
+        <a href="{{ url_for('delete_todo', todo_id=todo.id) }}">
+            [삭제]
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+<a href="{{ url_for('logout') }}">로그아웃</a>
 </body>
 </html>
