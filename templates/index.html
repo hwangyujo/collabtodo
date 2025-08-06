@@ -1,32 +1,25 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>나의 투두 리스트</title>
-</head>
-<body>
-<h2>{{ current_user.username }}님의 투두 리스트</h2>
-<form method="POST" action="{{ url_for('add_todo') }}">
-    <input type="text" name="title" placeholder="할 일을 입력하세요" required>
-    <button type="submit">추가</button>
+{% extends "layout.html" %}
+{% block content %}
+<h2 class="mb-4">나의 투두 리스트</h2>
+<form method="POST" action="{{ url_for('add_todo') }}" class="d-flex mb-3">
+    <input type="text" name="title" class="form-control me-2" placeholder="할 일을 입력하세요" required>
+    <button type="submit" class="btn btn-primary">추가</button>
 </form>
-<ul>
+<ul class="list-group">
     {% for todo in todos %}
-    <li>
-        {% if todo.is_completed %}
-            <s>{{ todo.title }}</s>
-        {% else %}
-            {{ todo.title }}
-        {% endif %}
-        <a href="{{ url_for('complete_todo', todo_id=todo.id) }}">
-            [완료/취소]
-        </a>
-        <a href="{{ url_for('delete_todo', todo_id=todo.id) }}">
-            [삭제]
-        </a>
-    </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+                {% if todo.is_completed %}
+                    <s class="text-muted">{{ todo.title }}</s>
+                {% else %}
+                    {{ todo.title }}
+                {% endif %}
+            </span>
+            <div>
+                <a href="{{ url_for('complete_todo', todo_id=todo.id) }}" class="btn btn-sm btn-success">완료/취소</a>
+                <a href="{{ url_for('delete_todo', todo_id=todo.id) }}" class="btn btn-sm btn-danger">삭제</a>
+            </div>
+        </li>
     {% endfor %}
 </ul>
-<a href="{{ url_for('logout') }}">로그아웃</a>
-</body>
-</html>
+{% endblock %}
